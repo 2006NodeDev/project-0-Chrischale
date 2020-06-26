@@ -1,26 +1,22 @@
 import express, { Request, Response, NextFunction } from 'express'
-import { User } from '../models/User'
+import { User } from '../models/Users'
 import { authMware } from '../middleware/auth-middleware'
-
 
 export const uRouter = express.Router()
 
-
-
-
-// // Get all
-// uRouter.get('/', authMware(['Admin']), (req:Request,res:Response,next:NextFunction)=>{
-//     res.json(user_arr)
-// })
+// Get all
+uRouter.get('/', authMware(['Admin']), (req:Request,res:Response,next:NextFunction)=>{
+    res.json(user_arr)
+})
 
 //Find Users
 uRouter.get('/users', authMware(['Finance Manager']), (req:Request, res:Response) => {
-    console.log(req.body)
-//how????????????????
-    res.send(user_arr)
-    res.status(401).send("The incoming token has expired")  
-    
-    
+    let req_param = req.body
+    for (const u of user_arr){
+        if (req_param == u){
+            res.send(u)
+        }
+    }
     
 })
 

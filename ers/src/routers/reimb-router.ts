@@ -1,24 +1,27 @@
-import express, { Request, Response, NextFunction } from 'express'
-import { User } from '../models/User'
-import { ReimbursementStatus } from './models/ReimbursementStatus'
-import { ReimbType } from './models/ReimbType'
-import { Reimbursement } from './models/Reimbursement'
-//???????????/
-
+import express, { Request, Response } from 'express'
 import { authMware } from '../middleware/auth-middleware'
+import { Reimbursement } from '../models/Reimbursement'
 
 export const rRouter = express.Router()
 
 //Find reimbursement by status
 rRouter.get('/reimbursements/status/:statusId', authMware(['Finance Manager']), (res:Response, req:Request) => {
-    let req_Status = req.params
-
-    //passing in the status namenot ID! match it to ReimbursementStatus.ts
-
-    
-
-
-
+    let req_satusId = req.body
+    if (isNaN(req_satusId)){
+        res.send("Status ID must be a number")
+    } else {
+        let found = false
+        for (const r of reimb_arr){
+            if (req_satusId === r.status){
+                found = true
+                res.send(r)
+            }
+        }
+        
+        if (!found){
+            res.sendStatus(404)
+        }
+    }
 })
 
 
@@ -38,5 +41,27 @@ export let reimb_arr:Reimbursement[] = [
         resolver: 5,
         status: 9,
         type: 2 
+    },
+    {
+        reimbursementId: 2,
+        author: 4,
+        amount: 7700,
+        dateSubmitted: 1468959781804,
+        dateResolved: 1469199218634,
+        description: "blah2",
+        resolver: 2,
+        status: 3,
+        type: 3 
+    },
+    {
+        reimbursementId: 3,
+        author: 17,
+        amount: 50,
+        dateSubmitted: 1468959781804,
+        dateResolved: 1469199218650,
+        description: "blah3",
+        resolver: 5,
+        status: 2,
+        type: 1 
     }
 ]
