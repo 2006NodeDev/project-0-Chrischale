@@ -1,29 +1,25 @@
-import express, { Request, Response, NextFunction } from 'express'
+import express, { Request, Response } from 'express'
 import { User } from '../models/Users'
-import { authMware } from '../middleware/auth-middleware'
+import { authMware } from '../middleware/authoriz-middleware'
+import { UserNotFoundError } from '../errors/userNotFound'
 
 export const uRouter = express.Router()
 
-// Get all
-uRouter.get('/', authMware(['Admin']), (req:Request,res:Response,next:NextFunction)=>{
-    res.json(user_arr)
-})
+// // Get all
+// uRouter.get('/', authMware(['Admin']), (req:Request,res:Response,next:NextFunction)=>{
+//     res.json(user_arr)
+// })
 
 //Find Users
-uRouter.get('/users', authMware(['Finance Manager']), (req:Request, res:Response) => {
-    let req_param = req.body
-    for (const u of user_arr){
-        if (req_param == u){
-            res.send(u)
-        }
-    }
+uRouter.get('/', authMware(['Finance Manager']), (req:Request, res:Response) => {
+    res.send(user_arr)
     
 })
 
 
 //Find User by id
 uRouter.get('/:id', authMware(['Finance Manager']), (req:Request, res:Response)=>{
-    let req_id = req.params
+    let {req_id} = req.params
     if(isNaN(+req_id)){
         res.status(400).send('ID must be numeric')
     } else {
@@ -35,13 +31,30 @@ uRouter.get('/:id', authMware(['Finance Manager']), (req:Request, res:Response)=
             }
         }
         if(!found){
-            res.status(404).send('User doesnt exist')
+            throw new UserNotFoundError()
         }
     }
 })
 
 
+//Update User
+uRouter.patch('/users', authMware(['Admin']), (req:Request, res:Response) => {
+    let res_user = req.body
+    if (isNaN(res_user.userId)){
+        res.status(400).send('Please provide ID')
+    }else{
+       // let upd_user = user_arr.find(u => u.userId === res_user.userId)
 
+        for (let prop of res_user){
+            //if field is undefined then skip update
+            if (prop == undefined){
+                continue
+            }// }else{
+            //     upd_user.
+            // }
+        }
+    }
+})
 
 
 
