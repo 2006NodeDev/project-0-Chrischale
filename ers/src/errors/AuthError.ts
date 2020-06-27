@@ -1,6 +1,6 @@
 import { HttpError } from "./httpErr";
 
-export class AuthorizationError extends HttpError {
+export class AuthError extends HttpError {
     constructor(){
         super(400, 'Invalid Credentials')
     }

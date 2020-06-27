@@ -1,7 +1,7 @@
 import express, { Response, Request } from 'express'
 import { uRouter, user_arr } from './routers/user-router' 
 import { sessionMiddleware } from './middleware/session-middleware'
-import { AuthorizationError } from './errors/AuthorizationErr'
+import { AuthError } from './errors/AuthError'
 import { BadCredError } from './errors/Bad CredentialsErr'
 import { rRouter } from './routers/reimb-router'
 
@@ -49,21 +49,21 @@ app.post('/login', (req:Request, res:Response) => {
     let pwd = req.body.password
     let found = false
 
-    if((uname || pwd) == false){
+    if(!(uname || pwd)){
         throw new BadCredError()
     } else {
           //iterate through all the users in the array  "users" created below
-        for (let i = 0; i < user_arr.length; i++){
+        for (const user of user_arr){
             //if both username and password match the user in the array's, then return the json obj
-            if ((user_arr[i].username === uname && user_arr[i].password === pwd)){
+            if ((user.username === uname && user.password === pwd)){
                 //RETRIEVE USERS FROM DB***
                 found = true
-                req.session.user = user_arr[i]
-                res.json(user_arr[i])
+                req.session.user = user
+                res.json(user)
             }
         }
         if (!found){
-            throw new AuthorizationError()        
+            throw new AuthError()        
         }
     }
 

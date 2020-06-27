@@ -1,6 +1,9 @@
 import express, { Request, Response } from 'express'
 //import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import { Reimbursement } from '../models/Reimbursement'
+import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
+import { ReimbNotFoundError } from '../errors/ReimbNotFoundError'
+import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
 
 export const rRouter = express.Router()
 
@@ -17,7 +20,7 @@ rRouter.get('/status/:statusId', (res:Response, req:Request) => {
         for (const r of reimb_arr){
             if (+req_statusId === r.status){
                 found = true
-                res.send(r)
+                res.json(r)
             }
         }
         
@@ -27,6 +30,54 @@ rRouter.get('/status/:statusId', (res:Response, req:Request) => {
     }
 })
 
+
+
+
+//Find Reimb by User
+rRouter.get('/author/userId/:userId', (res:Response, req:Request) =>{
+    let req_userID = req.params
+    console.log(req.params)
+
+    if(isNaN(+req_userID)){
+        throw new UserIdIncorrectError()
+    }else{
+        let found = false
+        for (let r of reimb_arr){
+            if (r.author === +req_userID){
+                found = true
+                res.json(r)
+            }
+        }
+        if(!found){
+            throw new ReimbNotFoundError()
+        }
+    }
+
+})
+
+
+
+//Submit Reimbursement
+rRouter.post('/', (res:Response, req:Request) => {
+    
+    let {r_author, r_amount} = req.body
+    //let day = new Date
+
+    if (!r_author || !r_amount ) {
+        throw new ReimbIncompleteError()
+    }
+    
+
+    //add new_reimb to the db
+
+    
+})
+
+
+//Update Reimbursement
+rRouter.patch('/', (res:Response, req:Request) => {
+
+})
 
 
 

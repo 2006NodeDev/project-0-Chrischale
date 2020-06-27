@@ -13,14 +13,15 @@ export const uRouter = express.Router()
 
 //Find Users
 uRouter.get('/', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response) => {
-    res.send(user_arr)
+    res.json(user_arr)
     
 })
 
 
 //Find User by id
-uRouter.get('/:id', (req:Request, res:Response)=>{
+uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response)=>{
     let req_id = req.params.id
+    console.log(req_id)
     
     if(isNaN(+req_id)){
         throw new UserIdIncorrectError()
@@ -28,7 +29,7 @@ uRouter.get('/:id', (req:Request, res:Response)=>{
         let found = false
         for(const user of user_arr){
             if(user.userId === +req_id){
-                res.send(user)
+                res.json(user)
                 found = true
             }
         }
