@@ -2,7 +2,7 @@ import express, { Response, Request } from 'express'
 import { uRouter, user_arr } from './routers/user-router' 
 import { sessionMiddleware } from './middleware/session-middleware'
 import { AuthorizationError } from './errors/AuthorizationErr'
-import { BadCredErr } from './errors/Bad CredentialsErr'
+import { BadCredError } from './errors/Bad CredentialsErr'
 import { rRouter } from './routers/reimb-router'
 
 
@@ -50,7 +50,7 @@ app.post('/login', (req:Request, res:Response) => {
     let found = false
 
     if((uname || pwd) == false){
-        throw new BadCredErr()
+        throw new BadCredError()
     } else {
           //iterate through all the users in the array  "users" created below
         for (let i = 0; i < user_arr.length; i++){

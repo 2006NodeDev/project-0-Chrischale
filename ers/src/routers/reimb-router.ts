@@ -1,18 +1,21 @@
 import express, { Request, Response } from 'express'
-import { authorizationMiddleware } from '../middleware/authoriz-middleware'
+//import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import { Reimbursement } from '../models/Reimbursement'
 
 export const rRouter = express.Router()
 
 //Find reimbursement by status
-rRouter.get('/reimbursements/status/:statusId', authorizationMiddleware(['Finance Manager']), (res:Response, req:Request) => {
-    let req_satusId = req.body
-    if (isNaN(req_satusId)){
+rRouter.get('/status/:statusId', (res:Response, req:Request) => {
+
+    let req_statusId = req.params
+    console.log(req.params)
+    
+    if (isNaN(+req_statusId)){
         res.send("Status ID must be a number")
     } else {
         let found = false
         for (const r of reimb_arr){
-            if (req_satusId === r.status){
+            if (+req_statusId === r.status){
                 found = true
                 res.send(r)
             }

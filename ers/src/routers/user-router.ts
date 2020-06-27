@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express'
 import { User } from '../models/Users'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
-import { UserNotFoundError } from '../errors/userNotFound'
+import { UserNotFoundError } from '../errors/UserNotFoundErr'
+import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
 
 export const uRouter = express.Router()
 
@@ -18,10 +19,11 @@ uRouter.get('/', authorizationMiddleware(['Finance Manager']), (req:Request, res
 
 
 //Find User by id
-uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response)=>{
-    let {req_id} = req.params
+uRouter.get('/:id', (req:Request, res:Response)=>{
+    let req_id = req.params.id
+    
     if(isNaN(+req_id)){
-        res.status(400).send('ID must be numeric')
+        throw new UserIdIncorrectError()
     } else {
         let found = false
         for(const user of user_arr){
