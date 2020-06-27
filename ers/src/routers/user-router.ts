@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import { User } from '../models/Users'
-import { authMware } from '../middleware/authoriz-middleware'
+import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import { UserNotFoundError } from '../errors/userNotFound'
 
 export const uRouter = express.Router()
@@ -11,14 +11,14 @@ export const uRouter = express.Router()
 // })
 
 //Find Users
-uRouter.get('/', authMware(['Finance Manager']), (req:Request, res:Response) => {
+uRouter.get('/', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response) => {
     res.send(user_arr)
     
 })
 
 
 //Find User by id
-uRouter.get('/:id', authMware(['Finance Manager']), (req:Request, res:Response)=>{
+uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response)=>{
     let {req_id} = req.params
     if(isNaN(+req_id)){
         res.status(400).send('ID must be numeric')
@@ -38,7 +38,7 @@ uRouter.get('/:id', authMware(['Finance Manager']), (req:Request, res:Response)=
 
 
 //Update User
-uRouter.patch('/users', authMware(['Admin']), (req:Request, res:Response) => {
+uRouter.patch('/users', authorizationMiddleware(['Admin']), (req:Request, res:Response) => {
     let res_user = req.body
     if (isNaN(res_user.userId)){
         res.status(400).send('Please provide ID')

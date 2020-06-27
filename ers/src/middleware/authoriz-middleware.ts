@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 
-export function authMware(roles:string[]){// build a middleware function
+export function authorizationMiddleware(roles:string[]){// build a middleware function
     return (req:Request, res:Response, next:NextFunction) => {
         let allowed = false
         let req_role = req.body.role

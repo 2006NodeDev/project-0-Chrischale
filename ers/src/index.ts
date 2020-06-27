@@ -1,9 +1,10 @@
 import express, { Response, Request } from 'express'
 import { uRouter, user_arr } from './routers/user-router' 
 import { sessionMiddleware } from './middleware/session-middleware'
-import { AuthError } from './errors/authFailErr'
-import { BadCredErr } from './errors/badCredErr'
+import { AuthorizationError } from './errors/AuthorizationErr'
+import { BadCredErr } from './errors/Bad CredentialsErr'
 import { rRouter } from './routers/reimb-router'
+
 
 
 const app = express()
@@ -19,7 +20,7 @@ app.use('/users', uRouter)
 app.use('/reimbursements', rRouter)
 
 
-// app.post('/users', (req:Request, res:Response) => {
+// app.post('/users', (req:chRequest, res:Response) => {
 //     console.log(req.body)
 //     let {userId,
 //         username,
@@ -53,7 +54,6 @@ app.post('/login', (req:Request, res:Response) => {
     } else {
           //iterate through all the users in the array  "users" created below
         for (let i = 0; i < user_arr.length; i++){
-            //how do you iterate through the list of objects? 1:01 pm?
             //if both username and password match the user in the array's, then return the json obj
             if ((user_arr[i].username === uname && user_arr[i].password === pwd)){
                 //RETRIEVE USERS FROM DB***
@@ -61,15 +61,26 @@ app.post('/login', (req:Request, res:Response) => {
                 req.session.user = user_arr[i]
                 res.json(user_arr[i])
             }
-
         }
         if (!found){
-            throw new AuthError()        
+            throw new AuthorizationError()        
         }
     }
+
+    
     
 
   
+})
+
+app.use((err, req, res, next) => {
+    if (err.statusCode){
+        res.status(err.statusCode).send(err.message)
+    }else{
+        console.log(err)
+        res.status(500).send('Something Went Wrong')
+
+    }
 })
 
 

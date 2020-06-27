@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express'
-import { authMware } from '../middleware/auth-middleware'
+import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import { Reimbursement } from '../models/Reimbursement'
 
 export const rRouter = express.Router()
 
 //Find reimbursement by status
-rRouter.get('/reimbursements/status/:statusId', authMware(['Finance Manager']), (res:Response, req:Request) => {
+rRouter.get('/reimbursements/status/:statusId', authorizationMiddleware(['Finance Manager']), (res:Response, req:Request) => {
     let req_satusId = req.body
     if (isNaN(req_satusId)){
         res.send("Status ID must be a number")
