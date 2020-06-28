@@ -4,11 +4,15 @@ import { Reimbursement } from '../models/Reimbursement'
 import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
 import { ReimbNotFoundError } from '../errors/ReimbNotFoundError'
 import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
+import {authenticationMiddleware} from '../middleware/authent-middleware'
+import { authorizationMiddleware } from '../middleware/authoriz-middleware'
+
 
 export const rRouter = express.Router()
+rRouter.use(authenticationMiddleware)
 
 //Find reimbursement by status
-rRouter.get('/status/:statusId', (res:Response, req:Request) => {
+rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), (res:Response, req:Request) => {
 
     let req_statusId = req.params
     console.log(req.params)
@@ -34,9 +38,8 @@ rRouter.get('/status/:statusId', (res:Response, req:Request) => {
 
 
 //Find Reimb by User
-rRouter.get('/author/userId/:userId', (res:Response, req:Request) =>{
+rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager']), (res:Response, req:Request) =>{
     let req_userID = req.params
-    console.log(req.params)
 
     if(isNaN(+req_userID)){
         throw new UserIdIncorrectError()
@@ -75,7 +78,7 @@ rRouter.post('/', (res:Response, req:Request) => {
 
 
 //Update Reimbursement
-rRouter.patch('/', (res:Response, req:Request) => {
+rRouter.patch('/', authorizationMiddleware(['Finance Manager']), (res:Response, req:Request) => {
 
 })
 

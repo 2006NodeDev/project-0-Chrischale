@@ -6,7 +6,6 @@ import { BadCredError } from './errors/Bad CredentialsErr'
 import { rRouter } from './routers/reimb-router'
 
 
-
 const app = express()
 
 
@@ -15,6 +14,7 @@ app.use(express.json())
 
 // to track server connections
 app.use(sessionMiddleware)
+
 
 app.use('/users', uRouter)
 app.use('/reimbursements', rRouter)

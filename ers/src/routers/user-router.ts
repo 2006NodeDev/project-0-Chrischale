@@ -1,19 +1,20 @@
 import express, { Request, Response } from 'express'
 import { User } from '../models/Users'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
+import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { UserNotFoundError } from '../errors/UserNotFoundErr'
 import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
+import { getAllUsers } from '../dao/users-dao'
 
 export const uRouter = express.Router()
 
-// // Get all
-// uRouter.get('/', authMware(['Admin']), (req:Request,res:Response,next:NextFunction)=>{
-//     res.json(user_arr)
-// })
+uRouter.use(authenticationMiddleware)
+
 
 //Find Users
-uRouter.get('/', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response) => {
-    res.json(user_arr)
+uRouter.get('/', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response) => {
+    let user_return = await getAllUsers()
+    res.json(user_return)
     
 })
 
@@ -41,7 +42,7 @@ uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), (req:Request, 
 
 
 //Update User
-uRouter.patch('/users', authorizationMiddleware(['Admin']), (req:Request, res:Response) => {
+uRouter.patch('/', authorizationMiddleware(['Admin']), (req:Request, res:Response) => {
     let res_user = req.body
     if (isNaN(res_user.userId)){
         res.status(400).send('Please provide ID')
