@@ -1,11 +1,12 @@
 import express, { Request, Response } from 'express'
-//import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import { Reimbursement } from '../models/Reimbursement'
 import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
 import { ReimbNotFoundError } from '../errors/ReimbNotFoundError'
 import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
+//import { getAllReimbursements } from '../dao/reimb-dao'
+
 
 
 export const rRouter = express.Router()
@@ -21,6 +22,7 @@ rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), (
         res.send("Status ID must be a number")
     } else {
         let found = false
+       // let reimb_arr = await getAllReimbursements()
         for (const r of reimb_arr){
             if (+req_statusId === r.status){
                 found = true
@@ -45,6 +47,7 @@ rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager'
         throw new UserIdIncorrectError()
     }else{
         let found = false
+        //let reimb_arr = await getAllReimbursements()
         for (let r of reimb_arr){
             if (r.author === +req_userID){
                 found = true

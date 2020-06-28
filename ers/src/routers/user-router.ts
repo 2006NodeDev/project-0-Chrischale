@@ -62,35 +62,3 @@ uRouter.patch('/', authorizationMiddleware(['Admin']), (req:Request, res:Respons
 })
 
 
-
-
-//dummy data:
-// export let user_arr:User[] = [
-//     {
-//         userId: 1, 
-//         username: 'chrischale', // not null, unique
-//         password: 'password1', // not null
-//         firstName: 'Chrischale', // not null
-//         lastName: 'Pand', // not null
-//         email: 'chrischale@gmail.com', // not null
-//         rolename: {roleID: 1, role: 'Trainee'}, // not null
-//     },
-//     {
-//         userId: 2, 
-//         username: 'Alec', // not null, unique
-//         password: 'password2', // not null
-//         firstName: 'Alec', // not null
-//         lastName: 'Batson', // not null
-//         email: 'abatson@gmail.com', // not null
-//         rolename: {roleID: 2, role: 'Finance Manager'} // not null
-//     },
-//     {
-//         userId: 3, 
-//         username: 'bob', // not null, unique
-//         password: 'password3', // not null
-//         firstName: 'Bob', // not null
-//         lastName: 'Builder', // not null
-//         email: 'bobb@gmail.com', // not null
-//         rolename: {roleID: 3, role: 'Admin'}, // not null
-//     }
-// ]
