@@ -7,7 +7,7 @@ export async function getAllUsers(){
 
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
-        let result:QueryResult = await client.query('select * from ers.users;')
+        let result:QueryResult = await client.query('select * from ers."users" u left join ers."roles" r on r."roleID" = u."role";')
         return result.rows
 
     }catch (err){

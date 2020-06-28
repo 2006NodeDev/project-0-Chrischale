@@ -1,9 +1,10 @@
 import express, { Response, Request } from 'express'
-import { uRouter, user_arr } from './routers/user-router' 
+import { uRouter } from './routers/user-router' 
 import { sessionMiddleware } from './middleware/session-middleware'
 import { AuthError } from './errors/AuthError'
 import { BadCredError } from './errors/Bad CredentialsErr'
 import { rRouter } from './routers/reimb-router'
+import { getAllUsers } from './dao/users-dao'
 
 
 const app = express()
@@ -20,30 +21,9 @@ app.use('/users', uRouter)
 app.use('/reimbursements', rRouter)
 
 
-// app.post('/users', (req:chRequest, res:Response) => {
-//     console.log(req.body)
-//     let {userId,
-//         username,
-//         password,
-//         firstName,
-//         lastName,
-//         email,
-//         rolename   } = req.body
-
-//         if(userId &&  username && password && firstName && lastName && email && rolename ){
-//                 users.push({userId, username, password, firstName, lastName, email, rolename})
-//                 res.sendStatus(201)
-//         }else{
-//             res.status(400).send("Fill out all fields")
-
-//         }
-//     res.sendStatus(501)
-// })
-
-
 
 //Login Endpoint
-app.post('/login', (req:Request, res:Response) => {
+app.post('/login', async (req:Request, res:Response) => {
     //assign request's username and password to variables to compare
     let uname = req.body.username
     let pwd = req.body.password
@@ -53,6 +33,8 @@ app.post('/login', (req:Request, res:Response) => {
         throw new BadCredError()
     } else {
           //iterate through all the users in the array  "users" created below
+        let user_arr = await getAllUsers()
+        //is there a better way to do this than having to pull the whole db every time? probs.
         for (const user of user_arr){
             //if both username and password match the user in the array's, then return the json obj
             if ((user.username === uname && user.password === pwd)){

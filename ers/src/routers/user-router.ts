@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { User } from '../models/Users'
+//import { User } from '../models/Users'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { UserNotFoundError } from '../errors/UserNotFoundErr'
@@ -20,7 +20,7 @@ uRouter.get('/', authorizationMiddleware(['Finance Manager']), async (req:Reques
 
 
 //Find User by id
-uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response)=>{
+uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response)=>{
     let req_id = req.params.id
     console.log(req_id)
     
@@ -28,6 +28,7 @@ uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), (req:Request, 
         throw new UserIdIncorrectError()
     } else {
         let found = false
+        let user_arr = await getAllUsers()
         for(const user of user_arr){
             if(user.userId === +req_id){
                 res.json(user)
@@ -64,32 +65,32 @@ uRouter.patch('/', authorizationMiddleware(['Admin']), (req:Request, res:Respons
 
 
 //dummy data:
-export let user_arr:User[] = [
-    {
-        userId: 1, 
-        username: 'chrischale', // not null, unique
-        password: 'password1', // not null
-        firstName: 'Chrischale', // not null
-        lastName: 'Pand', // not null
-        email: 'chrischale@gmail.com', // not null
-        rolename: {roleID: 1, role: 'Trainee'}, // not null
-    },
-    {
-        userId: 2, 
-        username: 'Alec', // not null, unique
-        password: 'password2', // not null
-        firstName: 'Alec', // not null
-        lastName: 'Batson', // not null
-        email: 'abatson@gmail.com', // not null
-        rolename: {roleID: 2, role: 'Finance Manager'} // not null
-    },
-    {
-        userId: 3, 
-        username: 'bob', // not null, unique
-        password: 'password3', // not null
-        firstName: 'Bob', // not null
-        lastName: 'Builder', // not null
-        email: 'bobb@gmail.com', // not null
-        rolename: {roleID: 3, role: 'Admin'}, // not null
-    }
-]
+// export let user_arr:User[] = [
+//     {
+//         userId: 1, 
+//         username: 'chrischale', // not null, unique
+//         password: 'password1', // not null
+//         firstName: 'Chrischale', // not null
+//         lastName: 'Pand', // not null
+//         email: 'chrischale@gmail.com', // not null
+//         rolename: {roleID: 1, role: 'Trainee'}, // not null
+//     },
+//     {
+//         userId: 2, 
+//         username: 'Alec', // not null, unique
+//         password: 'password2', // not null
+//         firstName: 'Alec', // not null
+//         lastName: 'Batson', // not null
+//         email: 'abatson@gmail.com', // not null
+//         rolename: {roleID: 2, role: 'Finance Manager'} // not null
+//     },
+//     {
+//         userId: 3, 
+//         username: 'bob', // not null, unique
+//         password: 'password3', // not null
+//         firstName: 'Bob', // not null
+//         lastName: 'Builder', // not null
+//         email: 'bobb@gmail.com', // not null
+//         rolename: {roleID: 3, role: 'Admin'}, // not null
+//     }
+// ]
