@@ -1,10 +1,9 @@
-import express, { Request, Response } from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 //import { User } from '../models/Users'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
-import { UserNotFoundError } from '../errors/UserNotFoundErr'
+import { getAllUsers, findUserbyID } from '../dao/users-dao'
 import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
-import { getAllUsers } from '../dao/users-dao'
 
 export const uRouter = express.Router()
 
@@ -12,33 +11,38 @@ uRouter.use(authenticationMiddleware)
 
 
 //Find Users
-uRouter.get('/', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response) => {
-    let user_return = await getAllUsers()
-    res.json(user_return)
+uRouter.get('/', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response, next:NextFunction) => {
+
+    try{
+
+        let user_return = await getAllUsers()
+        res.json(user_return)
+    
+    } catch (err) {
+        next(err)
+
+    } 
     
 })
 
 
 //Find User by id
-uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response)=>{
+uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response, next:NextFunction)=>{
     let req_id = req.params.id
-    console.log(req_id)
-    
-    if(isNaN(+req_id)){
-        throw new UserIdIncorrectError()
+    //console.log(req_id)
+    if (isNaN(+req_id)){
+        next (UserIdIncorrectError)
     } else {
-        let found = false
-        let user_arr = await getAllUsers()
-        for(const user of user_arr){
-            if(user.userId === +req_id){
-                res.json(user)
-                found = true
-            }
-        }
-        if(!found){
-            throw new UserNotFoundError()
+        try{
+            let ret_user = await findUserbyID(+req_id)
+            res.json(ret_user)
+        }catch (err){
+            next(err)
+    
         }
     }
+
+
 })
 
 

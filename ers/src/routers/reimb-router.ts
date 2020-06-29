@@ -1,11 +1,9 @@
-import express, { Request, Response } from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 //import { Reimbursement } from '../models/Reimbursement'
-import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
-import { ReimbNotFoundError } from '../errors/ReimbNotFoundError'
 import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
-import { getAllReimbursements } from '../dao/reimb-dao'
+import { getStatusById, getStatusByUser } from '../dao/reimb-dao'
 
 
 
@@ -13,26 +11,21 @@ export const rRouter = express.Router()
 rRouter.use(authenticationMiddleware)
 
 //Find reimbursement by status
-rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), async(req:Request, res:Response) => {
+rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), async(req:Request, res:Response, next:NextFunction) => {
 
     let req_statusId = req.params.statusId
-    console.log(req.params.statusId)
     
     if (isNaN(+req_statusId)){
         res.send("Status ID must be a number")
     } else {
-        let found = false
-        let reimb_arr = await getAllReimbursements()
-        for (const r of reimb_arr){
-            if (+req_statusId === r.status){
-                found = true
-                res.json(r)
-            }
+        try{
+            let result = await getStatusById(+req_statusId)
+            res.json(result)
+        } catch (err) {
+            next(err)
+
         }
-        
-        if (!found){
-            res.sendStatus(404)
-        }
+       
     }
 })
 
@@ -40,23 +33,20 @@ rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), a
 
 
 //Find Reimb by User
-rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response) =>{
-    let req_userID = req.params.userId
+rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response, next:NextFunction) =>{
+    let req_userId = req.params.userId
+    
+    if (isNaN(+req_userId)){
+        res.send("Status ID must be a number")
+    } else {
+        try{
+            let result = await getStatusByUser(+req_userId)
+            res.json(result)
+        } catch (err) {
+            next(err)
 
-    if(isNaN(+req_userID)){
-        throw new UserIdIncorrectError()
-    }else{
-        let found = false
-        let reimb_arr = await getAllReimbursements()
-        for (let r of reimb_arr){
-            if (r.author === +req_userID){
-                found = true
-                res.json(r)
-            }
         }
-        if(!found){
-            throw new ReimbNotFoundError()
-        }
+       
     }
 
 })
@@ -68,6 +58,8 @@ rRouter.post('/', (req:Request, res:Response) => {
     
     let {r_author, r_amount} = req.body
     //let day = new Date
+
+    //date_to_insert = day.getDate
 
     if (!r_author || !r_amount ) {
         throw new ReimbIncompleteError()

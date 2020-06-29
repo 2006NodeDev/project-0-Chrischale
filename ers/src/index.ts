@@ -1,10 +1,9 @@
-import express, { Response, Request } from 'express'
+import express, { Response, Request, NextFunction } from 'express'
 import { uRouter } from './routers/user-router' 
 import { sessionMiddleware } from './middleware/session-middleware'
-import { AuthError } from './errors/AuthError'
 import { BadCredError } from './errors/Bad CredentialsErr'
 import { rRouter } from './routers/reimb-router'
-import { getAllUsers } from './dao/users-dao'
+import { getUserByUsernamePassword } from './dao/users-dao'
 
 
 const app = express()
@@ -23,37 +22,29 @@ app.use('/reimbursements', rRouter)
 
 
 //Login Endpoint
-app.post('/login', async (req:Request, res:Response) => {
+app.post('/login', async (req:Request, res:Response, next:NextFunction) => {
     //assign request's username and password to variables to compare
     let uname = req.body.username
     let pwd = req.body.password
-    let found = false
 
     if(!(uname || pwd)){
         throw new BadCredError()
     } else {
-          //iterate through all the users in the array  "users" created below
-        let user_arr = await getAllUsers()
-        //is there a better way to do this than having to pull the whole db every time? probs.
-        for (const user of user_arr){
-            //if both username and password match the user in the array's, then return the json obj
-            if ((user.username === uname && user.password === pwd)){
-                //RETRIEVE USERS FROM DB***
-                found = true
-                req.session.user = user
-                res.json(user)
-            }
-        }
-        if (!found){
-            throw new AuthError()        
-        }
-    }
+        try{
+            let result_user = await getUserByUsernamePassword(uname,pwd)
+            res.json(result_user)
 
-    
-    
+        }catch (err){
+            next(err)
+
+        }        
+    }    
 
   
 })
+
+
+
 
 app.use((err, req, res, next) => {
     if (err.statusCode){

@@ -9,6 +9,7 @@ export function reimbDTOtoReimb (rto: ReimbDTO): Reimbursement {
         amount: rto.amount,
         description:rto.description,
         dateSubmitted:  rto.date_submitted.getDate(),
+        //convert this to number!
         dateResolved: rto.date_resolved.getDate(),
         resolver: rto.resolver,
         status: rto.status,
