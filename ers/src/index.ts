@@ -32,6 +32,7 @@ app.post('/login', async (req:Request, res:Response, next:NextFunction) => {
     } else {
         try{
             let result_user = await getUserByUsernamePassword(uname,pwd)
+            req.session.user = result_user
             res.json(result_user)
 
         }catch (err){

@@ -3,7 +3,8 @@ import express, { Request, Response, NextFunction } from 'express'
 import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
-import { getStatusById, getStatusByUser } from '../dao/reimb-dao'
+import { getStatusById, getStatusByUser, submitNewReimb } from '../dao/reimb-dao'
+import { Reimbursement } from '../models/Reimbursement'
 
 
 
@@ -54,22 +55,44 @@ rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager'
 
 
 //Submit Reimbursement
-rRouter.post('/', (req:Request, res:Response) => {
-    
-    let {r_author, r_amount} = req.body
-    //let day = new Date
+rRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
+    let {author, amount, dateResolved, description, resolver, status, type} = req.body
+    if(!author || !amount || !description || !status || !type){
+        //ensure all that must be not null, are filled
+        next(new ReimbIncompleteError)
 
-    //date_to_insert = day.getDate
+    } else {
+        
+        let newReimb: Reimbursement = {
+            reimbursementId: 0,
+            author,
+            amount,
+            dateSubmitted: Date.now(),
+            dateResolved,
+            description,
+            resolver,
+            status,
+            type
+        }
+        //new users default to User role
 
-    if (!r_author || !r_amount ) {
-        throw new ReimbIncompleteError()
+        try{
+            if (isNaN(amount) || isNaN(status) || isNaN (type)){
+                throw new Error ('Please enter numbers for amount, status and type')
+            } else {
+                let savedReimb = await submitNewReimb(newReimb)
+                res.json(savedReimb)
+
+            }
+            
+        } catch (err) {
+            next (err)
+        }
+        
     }
-    
 
-    //add new_reimb to the db
-
-    
 })
+
 
 
 //Update Reimbursement

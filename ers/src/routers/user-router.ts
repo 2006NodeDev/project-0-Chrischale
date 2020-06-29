@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express'
-//import { User } from '../models/Users'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { getAllUsers, findUserbyID } from '../dao/users-dao'
 import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
+
 
 export const uRouter = express.Router()
 
@@ -46,6 +46,9 @@ uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), async (req:Req
 })
 
 
+
+
+
 //Update User
 uRouter.patch('/', authorizationMiddleware(['Admin']), (req:Request, res:Response) => {
     let res_user = req.body
@@ -64,5 +67,12 @@ uRouter.patch('/', authorizationMiddleware(['Admin']), (req:Request, res:Respons
         }
     }
 })
+
+
+
+
+
+
+
 
 
