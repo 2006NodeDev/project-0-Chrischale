@@ -6,7 +6,7 @@ export function authorizationMiddleware(roles:string[]){// build a middleware fu
         let allowed = false
        
         for(const role of roles){
-            if(req.session.user.role === role){
+            if(req.session.user.roleDetails.role === role){
                 allowed = true
                 next()
             }

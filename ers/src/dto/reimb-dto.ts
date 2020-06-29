@@ -1,9 +1,9 @@
 export class ReimbDTO{
-    reimbursementId: number
+    reimbursement_id: number
     author: number
     amount: number
-    dateSubmitted: Date
-    dateResolved: Date
+    date_submitted: Date
+    date_resolved: Date
     description: string
     resolver: number
     status: number

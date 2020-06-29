@@ -5,13 +5,13 @@ import { User } from "../models/Users";
 export function userDTOtoUser(uto: UserDTO):User{
     
     return{
-        userId: uto.userId,
+        userId: uto.user_id,
         username: uto.username,
         password: uto.password,
-        firstName: uto.firstName,
-        lastName: uto.lastName,
+        firstName: uto.first_name,
+        lastName: uto.last_name,
         email: uto.email,
-        rolename: { roleID: uto.roleID, role: uto.role }
+        roleDetails: { roleID: uto.role_id, role: uto.role }
     }
 
 }

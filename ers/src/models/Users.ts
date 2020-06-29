@@ -7,5 +7,5 @@ export class User{
     firstName: string // not null
     lastName: string // not null
     email: string // not null
-    rolename: Role // not null
+    roleDetails: Role // not null
 }
