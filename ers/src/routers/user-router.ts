@@ -3,6 +3,8 @@ import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { getAllUsers, findUserbyID } from '../dao/users-dao'
 import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
+//import { UserNotFoundError } from '../errors/UserNotFoundErr'
+//import { BadCredError } from '../errors/Bad CredentialsErr'
 
 
 export const uRouter = express.Router()
@@ -50,23 +52,23 @@ uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), async (req:Req
 
 
 //Update User
-uRouter.patch('/', authorizationMiddleware(['Admin']), (req:Request, res:Response) => {
-    let res_user = req.body
-    if (isNaN(res_user.userId)){
-        res.status(400).send('Please provide ID')
-    }else{
-       // let upd_user = user_arr.find(u => u.userId === res_user.userId)
+// uRouter.patch('/', authorizationMiddleware(['Admin']), async (req:Request, res:Response, next:NextFunction) => {
+//     let upd_user = req.body
 
-        for (let prop of res_user){
-            //if field is undefined then skip update
-            if (prop == undefined){
-                continue
-            }// }else{
-            //     upd_user.
-            // }
-        }
-    }
-})
+//     if (isNaN(upd_user.userId)){
+//         throw new BadCredError
+
+//     }else{
+//         try{
+//             let ret_user = await updateUser(upd_user)
+//             res.json(ret_user)
+//         }catch (err){
+//             next(err)
+    
+//         }
+       
+//     }
+// })
 
 
 

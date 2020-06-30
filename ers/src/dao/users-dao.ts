@@ -93,3 +93,39 @@ export async function findUserbyID(id: number){
 }
 
 
+
+//update user
+
+// export async function updateUser(changeUser: User) : Promise <User>{
+
+// //The userId must be presen as well as all fields to update, any field left undefined will not be updated.
+
+//     let client: PoolClient
+    
+//     //if anything is undefined, remove it from the updating object
+//     for (const f in changeUser){
+//         if (!f){
+//             delete changeUser[f]
+//         }
+//     }
+
+//     try{
+//         //check if userID exists if not throw a user not found err        
+//         client = await connectionPool.connect()
+
+//         let u_id = await client.query(`select * from ers."users" where "user_id = $1`, [changeUser.userId])
+//         if(u_id.rowCount === 0){
+//             throw new UserNotFoundError
+//         }
+
+//         let ret_User = await client.query(`update ers."users" set, "first_name" = $1, "last_name" = $2, "email" = $3, "role" = $4`, [])
+    
+    
+//     }catch (err) {
+//         console.log(err)
+//         throw new Error ('Unimplemented user error')
+
+//     }
+
+
+// }

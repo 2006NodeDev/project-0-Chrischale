@@ -1,10 +1,11 @@
-import express, { Request, Response, NextFunction } from 'express'
+import express, { Request, Response, NextFunction, request } from 'express'
 //import { Reimbursement } from '../models/Reimbursement'
 import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import { getStatusById, getStatusByUser, submitNewReimb } from '../dao/reimb-dao'
 import { Reimbursement } from '../models/Reimbursement'
+//import session from 'express-session'
 
 
 
@@ -34,7 +35,7 @@ rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), a
 
 
 //Find Reimb by User
-rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response, next:NextFunction) =>{
+rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager', request.params.userId]), async (req:Request, res:Response, next:NextFunction) =>{
     let req_userId = req.params.userId
     
     if (isNaN(+req_userId)){
@@ -81,7 +82,7 @@ rRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
                 throw new Error ('Please enter numbers for amount, status and type')
             } else {
                 let savedReimb = await submitNewReimb(newReimb)
-                res.json(savedReimb)
+                res.sendStatus(201).json(savedReimb)
 
             }
             
@@ -97,6 +98,12 @@ rRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
 
 //Update Reimbursement
 rRouter.patch('/', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response) => {
+//The reimbursementId must be presen as well as all fields to update, 
+//any field left undefined will not be updated. This can be used to approve and deny.
+
+
+
+
 
 })
 
