@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction, request } from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 //import { Reimbursement } from '../models/Reimbursement'
 import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
@@ -35,8 +35,9 @@ rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), a
 
 
 //Find Reimb by User
-rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager', request.params.userId]), async (req:Request, res:Response, next:NextFunction) =>{
+rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response, next:NextFunction) =>{
     let req_userId = req.params.userId
+
     
     if (isNaN(+req_userId)){
         res.send("Status ID must be a number")
