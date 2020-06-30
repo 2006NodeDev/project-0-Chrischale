@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 
-export function authorizationMiddleware(roles:string[] | number[]){
+export function authorizationMiddleware(roles:any){
     return (req:Request, res:Response, next:NextFunction) => {
         let allowed = false
 

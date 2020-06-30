@@ -1,10 +1,12 @@
-import express, { Request, Response, NextFunction } from 'express'
+import express, { Request, Response, NextFunction, request } from 'express'
 //import { Reimbursement } from '../models/Reimbursement'
 import { ReimbIncompleteError } from '../errors/ReimbIncompleteError'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
-import { getStatusById, getStatusByUser, submitNewReimb } from '../dao/reimb-dao'
+import { getStatusById, getStatusByUser, submitNewReimb, updateReimb } from '../dao/reimb-dao'
 import { Reimbursement } from '../models/Reimbursement'
+//import { BadCredError } from '../errors/Bad CredentialsErr'
+import { AuthError } from '../errors/AuthError'
 //import session from 'express-session'
 
 
@@ -34,8 +36,8 @@ rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), a
 
 
 
-//Find Reimb by User
-rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response, next:NextFunction) =>{
+//Find Reimb by Users
+rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager', request.params]), async (req:Request, res:Response, next:NextFunction) =>{
     let req_userId = req.params.userId
 
     
@@ -98,53 +100,27 @@ rRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
 
 
 //Update Reimbursement
-rRouter.patch('/', authorizationMiddleware(['Finance Manager']), (req:Request, res:Response) => {
-//The reimbursementId must be presen as well as all fields to update, 
+rRouter.patch('/', async (req:Request, res:Response, next: NextFunction) => {
+//The reimbursementId must be present as well as all fields to update, 
 //any field left undefined will not be updated. This can be used to approve and deny.
 
+    let upd_reimb: Reimbursement = req.body
+   
+    if (isNaN(upd_reimb.reimbursementId)){
+        throw AuthError
+    } else if(!upd_reimb){
+        throw new Error ('Please provide details to update')
+    }
 
+    try{
+        let result = await updateReimb(upd_reimb)
+        res.json(result)
 
+    }catch (err){
+        next(err)
+
+    }
 
 
 })
 
-
-
-
-//dummy data:
-
-// export let reimb_arr:Reimbursement[] = [
-//     {
-//         reimbursementId: 1,
-//         author: 2,
-//         amount: 300,
-//         dateSubmitted: 23,
-//         dateResolved: 43,
-//         description: "blah1",
-//         resolver: 5,
-//         status: 9,
-//         type: 2 
-//     },
-//     {
-//         reimbursementId: 2,
-//         author: 4,
-//         amount: 7700,
-//         dateSubmitted: 1468959781804,
-//         dateResolved: 1469199218634,
-//         description: "blah2",
-//         resolver: 2,
-//         status: 3,
-//         type: 3 
-//     },
-//     {
-//         reimbursementId: 3,
-//         author: 17,
-//         amount: 50,
-//         dateSubmitted: 1468959781804,
-//         dateResolved: 1469199218650,
-//         description: "blah3",
-//         resolver: 5,
-//         status: 2,
-//         type: 1 
-//     }
-// ]

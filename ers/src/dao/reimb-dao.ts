@@ -4,6 +4,7 @@ import { reimbDTOtoReimb } from "../utils/ReimbDTO-to-Reimb";
 import { ReimbNotFoundError } from "../errors/ReimbNotFoundError";
 import { UserNotFoundError } from "../errors/UserNotFoundErr";
 import { Reimbursement } from "../models/Reimbursement";
+import { BadCredError } from "../errors/Bad CredentialsErr";
 
 
 //get reimb by status id
@@ -94,3 +95,56 @@ export async function submitNewReimb(newReimb: Reimbursement) : Promise <Reimbur
 
     }
 }
+
+
+
+
+
+//update reimbursement
+export async function updateReimb(upd_Reimb : Reimbursement) : Promise <Reimbursement>{
+    let client:PoolClient
+      
+    
+
+    try{
+        client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
+        let n = await client.query(`select * from ers."reimbursement" r where  r."reimbursement_id" = $1;`, [upd_Reimb.reimbursementId])
+        let newReimb = reimbDTOtoReimb(n.rows[0])
+
+        for (const f in upd_Reimb){
+  
+            let q =  upd_Reimb[f]
+            newReimb[f] = q
+    
+        
+    
+        }
+
+        let result = await client.query(`update ers."reimbursement" set "author" = $1, "amount" = $2, "date_submitted" = $3, "date_resolved" = $4, 
+                                            "description" = $5, "resolver" = $6, "status" = $7, "type" = $8 where "reimbursement_id" = $9 returning * ;`, 
+                                                        [newReimb.author, newReimb.amount, newReimb.dateSubmitted, newReimb.dateResolved, 
+                                                            newReimb.description, newReimb.resolver, newReimb.status, newReimb.type, upd_Reimb.reimbursementId])
+        
+        return result.rows[0]
+        
+
+        
+
+    }catch (err){
+        if (err.message === 'ID is not a number'){
+            throw new BadCredError
+        }
+        
+        console.log(err)
+        throw new Error('Unimplimented id error')
+        
+ 
+    }finally{
+        client && client.release()
+
+    }
+}
+
+
+
+
