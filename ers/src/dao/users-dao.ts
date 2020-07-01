@@ -65,6 +65,7 @@ export async function getAllUsers(){
 
 export async function findUserbyID(id: number){
     let client:PoolClient
+    console.log(id)
 
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
