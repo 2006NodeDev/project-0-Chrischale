@@ -69,6 +69,7 @@ export async function getStatusByUser(id: number){
 //submit new reimb
 export async function submitNewReimb(newReimb: Reimbursement) : Promise <Reimbursement>{
     let client:PoolClient
+    console.log(newReimb)
 
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
