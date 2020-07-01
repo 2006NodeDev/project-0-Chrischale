@@ -80,9 +80,7 @@ export async function submitNewReimb(newReimb: Reimbursement) : Promise <Reimbur
         
         newReimb.reimbursementId = result.rows[0].reimbursement_id
         return newReimb
-
-        
-        
+       
 
     }catch (err){
         
@@ -104,8 +102,6 @@ export async function submitNewReimb(newReimb: Reimbursement) : Promise <Reimbur
 export async function updateReimb(upd_Reimb : Reimbursement) : Promise <Reimbursement>{
     let client:PoolClient
       
-    
-
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
         let n = await client.query(`select * from ers."reimbursement" r where  r."reimbursement_id" = $1;`, [upd_Reimb.reimbursementId])

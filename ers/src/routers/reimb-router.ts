@@ -85,7 +85,8 @@ rRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
                 throw new Error ('Please enter numbers for amount, status and type')
             } else {
                 let savedReimb = await submitNewReimb(newReimb)
-                res.sendStatus(201).json(savedReimb)
+                res.json(savedReimb).sendStatus(201)
+
 
             }
             
@@ -100,7 +101,7 @@ rRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
 
 
 //Update Reimbursement
-rRouter.patch('/', async (req:Request, res:Response, next: NextFunction) => {
+rRouter.patch('/', authorizationMiddleware(['Finance Manager']), async (req:Request, res:Response, next: NextFunction) => {
 //The reimbursementId must be present as well as all fields to update, 
 //any field left undefined will not be updated. This can be used to approve and deny.
 

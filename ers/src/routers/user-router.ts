@@ -1,10 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express'
 import { authorizationMiddleware } from '../middleware/authoriz-middleware'
 import {authenticationMiddleware} from '../middleware/authent-middleware'
-import { getAllUsers, findUserbyID } from '../dao/users-dao'
+import { getAllUsers, findUserbyID, updateUser } from '../dao/users-dao'
 import { UserIdIncorrectError } from '../errors/UserIdIncorrectErr'
-//import { UserNotFoundError } from '../errors/UserNotFoundErr'
-//import { BadCredError } from '../errors/Bad CredentialsErr'
+import { User } from '../models/Users'
+import { BadCredError } from '../errors/Bad CredentialsErr'
 
 
 export const uRouter = express.Router()
@@ -52,24 +52,34 @@ uRouter.get('/:id', authorizationMiddleware(['Finance Manager']), async (req:Req
 
 
 //Update User
-// uRouter.patch('/', authorizationMiddleware(['Admin']), async (req:Request, res:Response, next:NextFunction) => {
-//     let upd_user = req.body
-
-//     if (isNaN(upd_user.userId)){
-//         throw new BadCredError
-
-//     }else{
-//         try{
-//             let ret_user = await updateUser(upd_user)
-//             res.json(ret_user)
-//         }catch (err){
-//             next(err)
+uRouter.patch('/',authorizationMiddleware(['Admin']), async (req:Request, res:Response, next: NextFunction) => {
+    //The reimbursementId must be present as well as all fields to update, 
+    //any field left undefined will not be updated. This can be used to approve and deny.
     
-//         }
-       
-//     }
-// })
+        let upd_reimb: User = req.body
+          
+        try{
+            if (isNaN(upd_reimb.userId)){
+                throw UserIdIncorrectError
+            } else if(!upd_reimb){
+                throw new Error ('Please provide details to update')
+            }
 
+            let result = await updateUser(upd_reimb)
+            res.json(result)
+    
+        }catch (err){
+            if(err.message === 'Please provide details to update'){
+                throw BadCredError
+            }
+
+            next(err)
+    
+        }
+    
+    
+    })
+    
 
 
 

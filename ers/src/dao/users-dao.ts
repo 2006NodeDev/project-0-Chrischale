@@ -4,6 +4,7 @@ import { userDTOtoUser } from "../utils/UserDTO-to-User";
 import { UserNotFoundError } from "../errors/UserNotFoundErr";
 import { AuthError } from "../errors/AuthError";
 import { User } from "../models/Users";
+import { BadCredError } from "../errors/Bad CredentialsErr";
 
 
 
@@ -14,7 +15,7 @@ export async function getUserByUsernamePassword(username: string, password:strin
 
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
-        let result:QueryResult = await client.query(`select * from ers."users" u left join ers."roles" r2 on u."role" = r2."role_id" where u."username" = $1 and u."password" = $2;`, [username, password])
+        let result:QueryResult = await client.query(`select * from ers."users" u left join ers."roles" r2 on u."role_id" = r2."role_id" where u."username" = $1 and u."password" = $2;`, [username, password])
         if (result.rowCount === 0){
             throw new Error ('User Not Found')
         } else {
@@ -42,7 +43,7 @@ export async function getAllUsers(){
 
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
-        let result:QueryResult = await client.query('select * from ers."users" u left join ers."roles" r on r."role_id" = u."role";')
+        let result:QueryResult = await client.query('select * from ers."users";')
         
         return result.rows.map(userDTOtoUser)
 
@@ -67,7 +68,7 @@ export async function findUserbyID(id: number){
 
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
-        let result:QueryResult = await client.query(`select * from ers."users" u left join ers."roles" r on r."role_id" = u."role" where u."role" = $1;`, [id])
+        let result:QueryResult = await client.query(`select * from ers."users" u where u."role_id" = $1;`, [id])
         
         if (result.rowCount === 0){
             throw new Error('User Not Found')
@@ -96,36 +97,42 @@ export async function findUserbyID(id: number){
 
 //update user
 
-// export async function updateUser(changeUser: User) : Promise <User>{
+export async function updateUser(upd_Reimb : User) : Promise <User>{
+    let client:PoolClient
+      
+    try{
+        client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
+        let n = await client.query(`select * from ers."users" r where  r."user_id" = $1;`, [upd_Reimb.userId])
 
-// //The userId must be presen as well as all fields to update, any field left undefined will not be updated.
+        //convert required user to a User object
+        let newReimb = userDTOtoUser(n.rows[0])
+        console.log(newReimb)
 
-//     let client: PoolClient
-    
-//     //if anything is undefined, remove it from the updating object
-//     for (const f in changeUser){
-//         if (!f){
-//             delete changeUser[f]
-//         }
-//     }
+        for (const f in upd_Reimb){
+            console.log(f)
 
-//     try{
-//         //check if userID exists if not throw a user not found err        
-//         client = await connectionPool.connect()
+            let q =  upd_Reimb[f]
+            newReimb[f] = q           
+            
+        }
+        
 
-//         let u_id = await client.query(`select * from ers."users" where "user_id = $1`, [changeUser.userId])
-//         if(u_id.rowCount === 0){
-//             throw new UserNotFoundError
-//         }
+        let result = await client.query(`update ers."users" u set "first_name" = $1, "last_name" = $2, "email" = $3, "role_id" = $4, "role" = $5 where u."user_id" =  $6 returning *;`, 
+                                                        [newReimb.firstName, newReimb.lastName, newReimb.email, newReimb.roleDetails.roleID, newReimb.roleDetails.role, upd_Reimb.userId])
+        return result.rows[0]
+             
+    }catch (err){
+        if (err.message === 'ID is not a number'){
+            throw new BadCredError
+        }
+        
+        console.log(err)
+        throw new Error('Unimplimented id error')
+        
+    }finally{
+        client && client.release()
 
-//         let ret_User = await client.query(`update ers."users" set, "first_name" = $1, "last_name" = $2, "email" = $3, "role" = $4`, [])
-    
-    
-//     }catch (err) {
-//         console.log(err)
-//         throw new Error ('Unimplemented user error')
-
-//     }
+    }
+}
 
 
-// }
