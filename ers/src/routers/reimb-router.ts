@@ -85,7 +85,8 @@ rRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
                 throw new Error ('Please enter numbers for amount, status and type')
             } else {
                 let savedReimb = await submitNewReimb(newReimb)
-                res.json(savedReimb).sendStatus(201)
+                //won't let me set status, only send? why?
+                res.json(savedReimb)
 
 
             }

@@ -28,6 +28,7 @@ export async function getUserByUsernamePassword(username: string, password:strin
             throw new AuthError
         }
         throw new Error('cant login error')
+        
 
 
     } finally {
@@ -65,8 +66,7 @@ export async function getAllUsers(){
 
 export async function findUserbyID(id: number){
     let client:PoolClient
-    console.log(id)
-
+    
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
         let result:QueryResult = await client.query(`select * from ers."users" u where u."user_id" = $1;`, [id])
@@ -107,17 +107,12 @@ export async function updateUser(upd_Reimb : User) : Promise <User>{
 
         //convert required user to a User object
         let newReimb = userDTOtoUser(n.rows[0])
-        console.log(newReimb)
-
+       
         for (const f in upd_Reimb){
-            console.log(f)
-
             let q =  upd_Reimb[f]
             newReimb[f] = q           
-            
         }
         
-
         let result = await client.query(`update ers."users" u set "first_name" = $1, "last_name" = $2, "email" = $3, "role_id" = $4, "role" = $5 where u."user_id" =  $6 returning *;`, 
                                                         [newReimb.firstName, newReimb.lastName, newReimb.email, newReimb.roleDetails.roleID, newReimb.roleDetails.role, upd_Reimb.userId])
         return result.rows[0]
