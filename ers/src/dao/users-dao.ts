@@ -68,7 +68,7 @@ export async function findUserbyID(id: number){
 
     try{
         client = await connectionPool.connect() //gives you a promise, so you take it out of the stack to prevent blocking
-        let result:QueryResult = await client.query(`select * from ers."users" u where u."role_id" = $1;`, [id])
+        let result:QueryResult = await client.query(`select * from ers."users" u where u."user_id" = $1;`, [id])
         
         if (result.rowCount === 0){
             throw new Error('User Not Found')
