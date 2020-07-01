@@ -37,7 +37,7 @@ rRouter.get('/status/:statusId', authorizationMiddleware(['Finance Manager']), a
 
 
 //Find Reimb by Users
-rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager', request.params]), async (req:Request, res:Response, next:NextFunction) =>{
+rRouter.get('/author/userId/:userId', authorizationMiddleware(['Finance Manager', 'User']), async (req:Request, res:Response, next:NextFunction) =>{
     let req_userId = req.params.userId
 
     
